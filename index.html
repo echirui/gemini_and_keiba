@@ -7,6 +7,16 @@
     <title>競馬単勝オッズ予測エンジンの構築プロセス</title>
     <!-- Marked.js for Markdown parsing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
     <!-- Highlight.js for syntax highlighting -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
@@ -455,6 +465,18 @@
 
                 // Parse and render
                 mdContainer.innerHTML = marked.parse(preprocessedText);
+
+                // Intercept markdown links to stay in the viewer
+                mdContainer.querySelectorAll('a').forEach(a => {
+                    const href = a.getAttribute('href');
+                    if (href && href.endsWith('.md') && !href.startsWith('http')) {
+                        a.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const fileId = href.replace('.md', '');
+                            loadMarkdown(fileId);
+                        });
+                    }
+                });
 
                 // Re-process MathJax if it's available
                 if (window.MathJax) {
